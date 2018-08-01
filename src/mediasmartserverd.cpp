@@ -202,92 +202,23 @@ int run_light_show(const LedControlPtr& leds) {
 	sigset_t sigempty;
 	sigemptyset(&sigempty);
 
-	size_t step = 0;
+	size_t state = 0;
+	int light_leds = 0;
 
 	while (true) {
-		step++;
-		
-		cout << "step: " << step << "\n";
-
 		for (size_t i = 0; i < 4; ++i) {
-			cout << "i: " << i << "\n";
-
-			if (i == 0) {
-				if (step == 1) {
-					leds->Set(LED_BLUE, i, true);
-				}
-
-				if (step == 2) {
-					leds->Set(LED_RED, i, true);				
-				}
-
-				if (step == 3) {
-					leds->Set(LED_BLUE | LED_RED, i, true);
-				}
-
-				if (step == 4) {
-					leds->Set(LED_BLUE, i, false);
-				}
+			switch (rand() % 4) {
+			default:
+			case 0: light_leds = 0; break;
+			case 1: light_leds = LED_BLUE; break;
+			case 2: light_leds = LED_RED;  break;
+			case 3: light_leds = LED_BLUE | LED_RED; break;
 			}
 
-			if (i == 1) {
-				if (step == 1) {
-					leds->Set(LED_BLUE, i, false);
-				}
-
-				if (step == 2) {
-					leds->Set(LED_BLUE, i, true);
-				}
-
-				if (step == 3) {
-					leds->Set(LED_RED, i, true);
-				}
-
-				if (step == 4) {
-					leds->Set(LED_BLUE | LED_RED, i, true);
-				}
-			}
-
-			if (i == 2) {
-				if (step == 1) {
-					leds->Set(LED_BLUE | LED_RED, i, true);
-				}
-
-				if (step == 2) {
-					leds->Set(LED_BLUE, i, false);
-				}
-
-				if (step == 3) {
-					leds->Set(LED_BLUE, i, true);
-				}
-
-				if (step == 4) {
-					leds->Set(LED_RED, i, true);
-				}
-			}
-
-			if (i == 3) {
-				if (step == 1) {
-					leds->Set(LED_RED, i, true);
-				}
-
-				if (step == 2) {
-					leds->Set(LED_BLUE | LED_RED, i, true);
-				}
-
-				if (step == 3) {
-					leds->Set(LED_BLUE, i, false);
-				}
-
-				if (step == 4) {
-					leds->Set(LED_BLUE, i, true);
-				}
-			}
+			leds->Set(light_leds, i, true);
+			leds->Set(~light_leds, i, false);
 		}
-
-		if (step == 4) {
-			step = 0;
-		}
+		
 
 		// wait a bit
 		struct timespec timeout = { 0, 200000000 };
