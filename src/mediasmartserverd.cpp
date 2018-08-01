@@ -199,8 +199,6 @@ int show_version( ) {
 /// run a light show
 
 int run_light_show2(const LedControlPtr& leds, int light_show) {
-	size_t state = 0;
-
 	sigset_t sigempty;
 	sigemptyset(&sigempty);
 
@@ -437,7 +435,7 @@ int main( int argc, char* argv[] ) try {
 		case 'h': // help!
 			return show_help( );
 		case 'S': // light-show
-			if ( optarg ) light_show = atoi( optarg );
+			light_show = 10;
 			break;
 		case 'u': //Use system LED as update notification light.
 			run_update_monitor = true;
