@@ -35,8 +35,8 @@
 
 //- constants
 enum {
-	LED_BLUE	= 1 << 0,
-	LED_RED		= 1 << 1,
+	LED_BLUE	= 1 << 0, // 1
+	LED_RED		= 1 << 1, // 2
 };
 
 enum LedState {

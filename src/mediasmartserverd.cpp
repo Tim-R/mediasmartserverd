@@ -205,6 +205,8 @@ int run_light_show(const LedControlPtr& leds) {
 	size_t state = 0;
 	int light_leds = 0;
 
+	leds->SetSystemLed(2, LED_BLINK);
+
 	while (true) {
 		for (size_t i = 0; i < 4; ++i) {
 			switch (rand() % 4) {
