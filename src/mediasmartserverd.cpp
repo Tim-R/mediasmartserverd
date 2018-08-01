@@ -197,13 +197,37 @@ int show_version( ) {
 
 /////////////////////////////////////////////////////////////////////////////
 /// run a light show
+
+int run_light_show2(const LedControlPtr& leds, int light_show) {
+	size_t state = 0;
+
+	sigset_t sigempty;
+	sigemptyset(&sigempty);
+	while (true) {
+			const size_t sel = (state < 3) ? state : 6 - state;
+			for (size_t i = 0; i < 4; ++i) leds->Set(light_leds, i, (i == sel));
+			if (++state >= 6) state = 0;
+			break;
+
+
+		// wait a bit
+		struct timespec timeout = { 0, 200000000 };
+		int res = pselect(0, 0, 0, 0, &timeout, &sigempty);
+		if (res < 0) {
+			if (EINTR != errno) throw ErrnoException("select");
+			cout << "Exiting on signal\n";
+			break; // signalled
+		}
+	}
+
+	return 0;
+}
+
 int run_light_show( const LedControlPtr& leds, int light_show ) {
 	
 	int light_leds = 0;
 	size_t show_mode = 0;
-
-	cout << "light_show: " << light_show << "\n";
-
+	
 	if ( 1 == light_show ) {
 		// holiday lights
 		srand( time(0) );
@@ -215,10 +239,9 @@ int run_light_show( const LedControlPtr& leds, int light_show ) {
 		case 1: light_leds = LED_RED;  break;
 		case 2: light_leds = LED_BLUE | LED_RED; break;
 		}
-	}
+	}	
 
-	cout << "show_mode: " << show_mode << "\n";
-	
+	show_mode = 3;
 	
 	size_t state = 0;
 	
@@ -397,7 +420,7 @@ int main( int argc, char* argv[] ) try {
 	leds->Set( LED_BLUE | LED_RED, 3, xmas );
 	if ( xmas ) return 0;
 	
-	if ( light_show > 0 ) return run_light_show( leds, light_show );
+	if ( light_show > 0 ) return run_light_show2( leds, light_show );
 	
 	// initialise update monitor
 	UpdateMonitor update_monitor(leds);
