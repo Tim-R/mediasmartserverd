@@ -198,7 +198,7 @@ int show_version( ) {
 /////////////////////////////////////////////////////////////////////////////
 /// run a light show
 
-int run_light_show(const LedControlPtr& leds, int light_show) {
+int run_light_show() {
 	sigset_t sigempty;
 	sigemptyset(&sigempty);
 
