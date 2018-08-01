@@ -198,7 +198,7 @@ int show_version( ) {
 /////////////////////////////////////////////////////////////////////////////
 /// run a light show
 
-int run_light_show() {
+int run_light_show(const LedControlPtr& leds) {
 	sigset_t sigempty;
 	sigemptyset(&sigempty);
 
@@ -410,7 +410,7 @@ int main( int argc, char* argv[] ) try {
 	leds->Set( LED_BLUE | LED_RED, 3, xmas );
 	if ( xmas ) return 0;
 	
-	if ( light_show ) return run_light_show();
+	if ( light_show ) return run_light_show( leds );
 	
 	// initialise update monitor
 	UpdateMonitor update_monitor(leds);
