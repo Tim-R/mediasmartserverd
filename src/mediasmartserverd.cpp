@@ -313,7 +313,7 @@ int main( int argc, char* argv[] ) try {
 	
 	// pass command line arguments
 	while ( true ) {
-		const int c = getopt_long( argc, argv, "aDuvV", long_opts, 0 );
+		const int c = getopt_long( argc, argv, "aDuvVSX", long_opts, 0 );
 		if ( -1 == c ) break;
 		
 		switch ( c ) {
