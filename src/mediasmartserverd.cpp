@@ -198,7 +198,7 @@ int show_version( ) {
 /////////////////////////////////////////////////////////////////////////////
 /// run a light show
 
-int run_light_show2(const LedControlPtr& leds, int light_show) {
+int run_light_show(const LedControlPtr& leds, int light_show) {
 	sigset_t sigempty;
 	sigemptyset(&sigempty);
 
@@ -206,8 +206,12 @@ int run_light_show2(const LedControlPtr& leds, int light_show) {
 
 	while (true) {
 		step++;
+		
+		cout << "step: " << step << "\n";
 
 		for (size_t i = 0; i < 4; ++i) {
+			cout << "i: " << i << "\n";
+
 			if (i == 0) {
 				if (step == 1) {
 					leds->Set(LED_BLUE, i, true);
@@ -298,95 +302,6 @@ int run_light_show2(const LedControlPtr& leds, int light_show) {
 	return 0;
 }
 
-int run_light_show( const LedControlPtr& leds, int light_show ) {
-
-	int light_leds = 0;
-	size_t show_mode = 0;
-	
-	if ( 1 == light_show ) {
-		// holiday lights
-		srand( time(0) );
-	} else {
-		show_mode = (light_show - 2) % 4 + 1;
-		switch ( (light_show - 2) / 4 ) {
-		default:
-		case 0: light_leds = LED_BLUE; break;
-		case 1: light_leds = LED_RED;  break;
-		case 2: light_leds = LED_BLUE | LED_RED; break;
-		}
-	}	
-
-	show_mode = 3;
-	
-	size_t state = 0;
-	
-	sigset_t sigempty;
-	sigemptyset( &sigempty );
-	while ( true ) {
-		
-		switch ( show_mode ) {
-		case 0: // holiday lights
-		{
-			for ( size_t i = 0; i < 4; ++i ) {
-				switch ( rand() % 4 ) {
-				default:
-				case 0: light_leds = 0; break;
-				case 1: light_leds = LED_BLUE; break;
-				case 2: light_leds = LED_RED;  break;
-				case 3: light_leds = LED_BLUE | LED_RED; break;
-				}
-				
-				leds->Set(  light_leds, i, true );
-				leds->Set( ~light_leds, i, false );
-			}
-			break;
-		}
-		case 1: // descending chasers
-		{
-			for ( size_t i = 0; i < 4; ++i ) leds->Set( light_leds, i, (i == (3 - state)) );
-			if ( ++state >= 4 ) state = 0;
-			break;
-		}
-		case 2: // ascending chasers
-		{
-			for ( size_t i = 0; i < 4; ++i ) leds->Set( light_leds, i, (i == state) );
-			if ( ++state >= 4 ) state = 0;
-			break;
-		}
-		case 3: // knight rider
-		{
-			const size_t sel = ( state < 3 ) ? state : 6 - state;
-			for ( size_t i = 0; i < 4; ++i ) leds->Set( light_leds, i, (i == sel) );
-			if ( ++state >= 6 ) state = 0;
-			break;
-		}
-		case 4: // pulsing
-		{
-			for ( size_t i = 0; i < 4; ++i ) leds->Set( light_leds, i, true );
-			const size_t sel = 1 + ( ( state < 9 ) ? state : 16 - state );
-			leds->SetBrightness( sel );
-			if ( ++state >= 16 ) state = 0;
-			break;
-		}
-		default:
-			cout << "Unsupported light show\n";
-			return 1;
-		}
-		
-		
-		// wait a bit
-		struct timespec timeout = { 0, 200000000 };
-		int res = pselect( 0, 0, 0, 0, &timeout, &sigempty );
-		if ( res < 0 ) {
-			if ( EINTR != errno ) throw ErrnoException( "select" );
-			cout << "Exiting on signal\n";
-			break; // signalled
-		}
-	}
-	
-	return 0;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 /// main entry point
@@ -435,7 +350,7 @@ int main( int argc, char* argv[] ) try {
 		case 'h': // help!
 			return show_help( );
 		case 'S': // light-show
-			light_show = 10;
+			light_show = true;
 			break;
 		case 'u': //Use system LED as update notification light.
 			run_update_monitor = true;
@@ -495,7 +410,7 @@ int main( int argc, char* argv[] ) try {
 	leds->Set( LED_BLUE | LED_RED, 3, xmas );
 	if ( xmas ) return 0;
 	
-	if ( light_show > 0 ) return run_light_show2( leds, light_show );
+	if ( light_show ) return run_light_show();
 	
 	// initialise update monitor
 	UpdateMonitor update_monitor(leds);
