@@ -202,7 +202,7 @@ int run_light_show( const LedControlPtr& leds, int light_show ) {
 	int light_leds = 0;
 	size_t show_mode = 0;
 
-	cout "light_show: " << light_show << "\n";
+	cout << "light_show: " << light_show << "\n";
 
 	if ( 1 == light_show ) {
 		// holiday lights
@@ -217,7 +217,7 @@ int run_light_show( const LedControlPtr& leds, int light_show ) {
 		}
 	}
 
-	cout "show_mode: " << show_mode << "\n";
+	cout << "show_mode: " << show_mode << "\n";
 	
 	
 	size_t state = 0;
